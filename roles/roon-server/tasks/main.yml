@@ -1,0 +1,38 @@
+---
+# The tasks required to get Roon server up and running.
+- name: Check if Roon is installed
+  ansible.builtin.stat:
+    path: /opt/RoonServer
+  register: RoonServer
+
+- debug:
+    msg: "Roon Server Installed = [{{ RoonServer.stat.exists }}] - Installing..."
+  when: RoonServer.stat.exists == false
+
+- debug:
+    msg: "Roon Server Installed = [{{ RoonServer.stat.exists }}] - Nothing to do!"
+  when: RoonServer.stat.exists == true
+
+- name: Install Roon
+  when: RoonServer.stat.exists == false
+  block:
+    - name: Wget Downloading Roon installer script
+      ansible.builtin.get_url:
+        url: https://download.roonlabs.net/builds/roonserver-installer-linuxx64.sh
+        dest: /tmp/roonserver-installer-linuxx64.sh
+        mode: "0777"
+
+    - name: Modify install script to change database location (Optional)
+      ansible.builtin.lineinfile:
+        path: /tmp/roonserver-installer-linuxx64.sh
+        regexp: "^Environment=ROON_DATAROOT="
+        line: "Environment=ROON_DATAROOT={{ roon_database_path | default('/var/roon/RoonServer') }}"
+
+    - name: Run Roon install script
+      ansible.builtin.expect:
+        command: /tmp/roonserver-installer-linuxx64.sh
+        responses:
+          "Do you want to install RoonServer on this machine": 'Y\n'
+        timeout: 60
+      become: true
+#? Could we run the above as a simple script by removing the lines which prompt the user for a Y\n - using [lineinfile]?

@@ -1,0 +1,15 @@
+[wsl]
+127.0.0.1
+
+[wsl:vars]
+ansible_connection=local
+
+[windows]
+127.0.0.1
+
+[windows:vars]
+ansible_port=5985
+ansible_connection=winrm
+ansible_winrm_transport=basic
+ansible_user=ansible-user
+ansible_password=aJfALEr9EPKcDkr3y!sB4#8e

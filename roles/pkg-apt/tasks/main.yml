@@ -1,0 +1,8 @@
+---
+- name: Install Apt Dependencies
+  ansible.builtin.apt:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default('latest') }}"
+    update_cache: yes
+  loop: "{{ pkg_apt_dependencies }}"
+  become: true

@@ -1,0 +1,30 @@
+---
+# Prepping Ubuntu to run Roon Server
+# Prereqs for Ansible are ssh-server and python present on target host(s)
+# Prereq for running this is ssh-copy-id from controller to the target host(s)
+- hosts: enders-nuc
+  remote_user: steve
+  tasks:
+    - debug:
+        msg: "The system architecture is: [{{ ansible_facts.system }}] Hostname: [{{ ansible_facts.hostname }}]"
+    # - debug:
+    #     msg: "Outputting all facts:"
+    # - debug:
+    #     var: ansible_facts
+    # - debug:
+    #     msg: "Outputting specific fact:"
+    # - debug:
+    #     var: ansible_facts.system
+    - include_role:
+        name: pkg-apt
+    - include_role:
+        name: roon-server
+
+  vars:
+    pkg_apt_dependencies:
+      - name: ffmpeg
+      - name: nano
+      #   state: latest <-- this is not required as 'latest' is the default value when not specified (see ./roles/pkg-apt/tasks/main.yml)
+      - name: libasound2
+      - name: cifs-utils
+      - name: curl

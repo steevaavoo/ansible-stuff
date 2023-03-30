@@ -1,0 +1,25 @@
+---
+- hosts: windows
+
+  tasks:
+    - name: update-apps-loop-example
+      ansible.builtin.apt:
+        name: "{{ item.name }}"
+        state: "{{ item.state | default('latest') }}"
+      loop:
+        - name: curl
+          state: latest
+        - name: neofetch
+          # state: latest <--this being disabled means "| default('latest')" above applies
+    - name: update-apps-list-example
+      ansible.builtin.apt:
+        name:
+          - curl
+          - wget
+          - python3
+        state: latest
+
+    # - name: update-curl
+    #   ansible.builtin.apt:
+    #     name: curl
+    #     state: latest
